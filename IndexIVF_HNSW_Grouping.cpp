@@ -412,6 +412,7 @@ namespace ivfhnsw
             // Compute centroid-neighbor_centroid and centroid-group_point vectors
             std::vector<float> centroid_vectors(nsubc * d);
             for (size_t subc = 0; subc < nsubc; subc++) {
+                std::cout << "Test3" << std::endl;
                 const float *nn_centroid = quantizer->getDataByInternalId(nn_centroid_idxs[subc]);
                 faiss::fvec_madd(d, nn_centroid, -1., centroid, centroid_vectors.data() + subc * d);
             }
