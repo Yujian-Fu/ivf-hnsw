@@ -53,7 +53,10 @@ namespace ivfhnsw {
             float mass[d];
             readXvec<float>(input, mass, d);
             if (i % report_every == 0)
+            {
                 std::cout << i / (0.01 * nc) << " %\n";
+                std::cout << mass[0] << " " << mass[1] << std::endl;
+            }
             quantizer->addPoint(mass);
         }
         quantizer->SaveInfo(path_info);
