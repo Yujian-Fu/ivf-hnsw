@@ -408,12 +408,14 @@ namespace ivfhnsw
                 nn_centroids_raw.pop();
             }
 
-            std::cout << "Test3" << std::endl;
+            std::cout << "Test3_1" << std::endl;
             // Compute centroid-neighbor_centroid and centroid-group_point vectors
             std::vector<float> centroid_vectors(nsubc * d);
             for (size_t subc = 0; subc < nsubc; subc++) {
-                std::cout << "Test3" << std::endl;
+                std::cout << nn_centroid_idxs[subc] << " " << nn_centroid_idxs.size() << std::endl;
+                std::cout << "Test3_2" << std::endl;
                 const float *nn_centroid = quantizer->getDataByInternalId(nn_centroid_idxs[subc]);
+                std::cout << "Test3_3" << std::endl;
                 faiss::fvec_madd(d, nn_centroid, -1., centroid, centroid_vectors.data() + subc * d);
             }
 
