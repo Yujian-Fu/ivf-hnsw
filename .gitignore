@@ -1,5 +1,4 @@
 *.make
-bin
 CMakeFiles
 cmake*
 .idea
