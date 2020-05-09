@@ -389,8 +389,10 @@ namespace ivfhnsw
 
         // Train Residual PQ
         std::cout << "Training Residual PQ codebook " << std::endl;
+        size_t counter = 0;
         for (auto group : group_map) {
-            std::cout << "Test1" << std::endl;
+            std::cout << std::endl << "Test1 with group_map_size " << group_map.size() <<  " / " << counter << std::endl;
+            counter ++;
             const idx_t centroid_idx = group.first;
             const float *centroid = quantizer->getDataByInternalId(centroid_idx);
             const std::vector<float> data = group.second;
