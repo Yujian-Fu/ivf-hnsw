@@ -415,9 +415,9 @@ namespace ivfhnsw
                 std::cout << nn_centroid_idxs[subc] << " " << nn_centroid_idxs.size() << std::endl;
                 std::cout << "Test3_2" << std::endl;
                 const float *nn_centroid = quantizer->getDataByInternalId(nn_centroid_idxs[subc]);
-                std::cout << "Test3_3" << nn_centroid[0] << std::endl;
-                std::cout << "Test3_4" << centroid[0] << std::endl;
-                std::cout << "Test3_5" << centroid_vectors.data()[subc * d] << std::endl;
+                std::cout << "Test3_3" << nn_centroid[d] << std::endl;
+                std::cout << "Test3_4" << centroid[d] << std::endl;
+                std::cout << "Test3_5" << centroid_vectors.data()[subc * d+d] << std::endl;
                 faiss::fvec_madd(d, nn_centroid, -1., centroid, centroid_vectors.data() + subc * d);
             }
 
