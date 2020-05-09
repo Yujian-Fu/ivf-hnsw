@@ -414,7 +414,6 @@ namespace ivfhnsw
             std::cout << "The number of nsubc is " << nsubc << std::endl; 
             for (size_t subc = 0; subc < nsubc; subc++) {
                 std::cout << "Now testing " << subc << std::endl;
-                std::cout << nn_centroid_idxs[subc] << " " << nn_centroid_idxs.size() << std::endl;
                 const float *nn_centroid = quantizer->getDataByInternalId(nn_centroid_idxs[subc]);
                 faiss::fvec_madd(d, nn_centroid, -1., centroid, centroid_vectors.data() + subc * d);
             }
