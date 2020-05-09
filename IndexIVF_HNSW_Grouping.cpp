@@ -426,7 +426,7 @@ namespace ivfhnsw
                                               centroid_vector_norms.data(), group_size);
 
             std::cout << "Test5" << std::endl;
-            // Compute final subcentroids 
+            // Compute final subcentroids
             std::vector<float> subcentroids(nsubc * d);
             for (size_t subc = 0; subc < nsubc; subc++)
                 faiss::fvec_madd(d, centroid, alpha, centroid_vectors.data() + subc*d, subcentroids.data() + subc*d);
