@@ -17,12 +17,12 @@ using namespace ivfhnsw;
 int main(int argc, char **argv)
 {
     //===============
-    // Parse Options
+    // Parse Options 
     //===============
     Parser opt = Parser(argc, argv);
 
     //==================
-    // Load Groundtruth
+    // Load Groundtruth 
     //==================
     std::cout << "Loading groundtruth from " << opt.path_gt << std::endl;
     std::vector<idx_t> massQA(opt.nq * opt.ngt);
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     }
 
     //==============
-    // Load Queries
+    // Load Queries 
     //==============
     std::cout << "Loading queries from " << opt.path_q << std::endl;
     std::vector<float> massQ(opt.nq * opt.d);

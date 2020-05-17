@@ -55,7 +55,6 @@ namespace ivfhnsw {
             if (i % report_every == 0)
             {
                 std::cout << i / (0.01 * nc) << " %\n";
-                std::cout << mass[0] << " " << mass[1] << std::endl;
             }
             quantizer->addPoint(mass);
         }
@@ -219,7 +218,7 @@ namespace ivfhnsw {
 
     void IndexIVF_HNSW::train_pq(size_t n, const float *x)
     {
-        // Assign train vectors 
+        // Assign train vectors
         std::vector <idx_t> assigned(n);
         assign(n, x, assigned.data());
 

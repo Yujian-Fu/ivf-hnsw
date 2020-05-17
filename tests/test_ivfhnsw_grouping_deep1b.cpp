@@ -91,7 +91,7 @@ int main(int argc, char **argv)
     }
 
     //====================
-    // Precompute indices
+    // Precompute indices 
     //====================
     if (!exists(opt.path_precomputed_idxs)){
         std::cout << "Precomputing indices" << std::endl;

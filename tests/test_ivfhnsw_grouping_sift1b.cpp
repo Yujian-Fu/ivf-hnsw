@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
         index->rotate_quantizer();
     }
     //===================
-    // Parse groundtruth
+    // Parse groundtruth 
     //=================== 
     std::cout << "Parsing groundtruth" << std::endl;
     std::vector<std::priority_queue< std::pair<float, idx_t >>> answers;
