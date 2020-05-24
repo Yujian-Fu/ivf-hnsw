@@ -165,6 +165,7 @@ namespace ivfhnsw {
     */
     void IndexIVF_HNSW::search(size_t k, const float *x, float *distances, long *labels, std::unordered_set<idx_t> g, size_t & visited_gt)
     {
+        StopW stopw = StopW();
         visited_gt = 0;
         float query_centroid_dists[nprobe]; // Distances to the coarse centroids.
         idx_t centroid_idxs[nprobe];        // Indices of the nearest coarse centroids
