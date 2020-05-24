@@ -175,14 +175,14 @@ int main(int argc, char **argv)
         answers[i].emplace(0.0f, massQA[opt.ngt*i]);
 
     //=======================
-    // Set search parameters
+    // Set search parameters 
     //=======================
     index->nprobe = opt.nprobe;
     index->max_codes = opt.max_codes;
     index->quantizer->efSearch = opt.efSearch;
 
     //========
-    // Search
+    // Search 
     //========
     size_t correct = 0;
     float distances[opt.k];
@@ -194,6 +194,7 @@ int main(int argc, char **argv)
         index->search(opt.k, massQ.data() + i*opt.d, distances, labels);
         std::priority_queue<std::pair<float, idx_t >> gt(answers[i]);
         std::unordered_set<idx_t> g;
+        std::cout << "The answers[i] is " << answers[i] << std::endl;
 
         while (gt.size()) {
             g.insert(gt.top().second);
