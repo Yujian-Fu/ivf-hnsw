@@ -187,7 +187,7 @@ int main(int argc, char **argv)
 
     StopW stopw = StopW();
     for (size_t i = 0; i < opt.nq; i++) {
-        index->search(opt.k, massQ.data() + i*opt.d, distances, labels);
+        
 
         std::priority_queue<std::pair<float, idx_t >> gt(answers[i]);
         std::unordered_set<idx_t> g;
@@ -196,6 +196,7 @@ int main(int argc, char **argv)
             g.insert(gt.top().second);
             gt.pop();
         }
+        index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g);
 
         for (size_t j = 0; j < opt.k; j++)
             if (g.count(labels[j]) != 0) {
