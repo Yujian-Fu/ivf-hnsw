@@ -199,7 +199,7 @@ int main(int argc, char **argv)
             gt.pop();
         }
 
-        std::cout << "This is the size of result " << g.size() << std::endl;
+        std::cout << "This is the size of result " << g.size() << " " << i << " " << std::endl;
         for (size_t j = 0; j < opt.k; j++)
             if (g.count(labels[j]) != 0) {
                 correct++;
