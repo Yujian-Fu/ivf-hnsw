@@ -216,7 +216,7 @@ int main(int argc, char **argv)
             
             index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, visited_gt);
             sum_visited_gt += visited_gt;
-            std::cout << sum_visited_gt << " " << i << " ";
+            std::cout << sum_visited_gt << "_" << i << " ";
             for (size_t j = 0; j < opt.k; j++)
             {
                 if (g.count(labels[j]) != 0) {
