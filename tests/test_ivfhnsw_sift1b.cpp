@@ -172,7 +172,8 @@ int main(int argc, char **argv)
     std::vector<std::priority_queue< std::pair<float, idx_t >>> answers;
     (std::vector<std::priority_queue< std::pair<float, idx_t >>>(opt.nq)).swap(answers);
     for (size_t i = 0; i < opt.nq; i++)
-        answers[i].emplace(0.0f, massQA[opt.ngt*i]);
+        for( size_t j = 0; j < opt.k; j++)
+            answers[i].emplace(0.0f, massQA[opt.ngt*i+j]);
 
     //=======================
     // Set search parameters 
@@ -189,7 +190,8 @@ int main(int argc, char **argv)
     long labels[opt.k];
 
     StopW stopw = StopW();
-    for (size_t i = 0; i < opt.nq; i++) {
+    //for (size_t i = 0; i < opt.nq; i++) {
+    for (size_t i = 0; i < 10; i++) {
         std::cout << std::endl;
         
         std::priority_queue<std::pair<float, idx_t >> gt(answers[i]);
