@@ -206,7 +206,7 @@ int main(int argc, char **argv)
             if (g.count(labels[j]) != 0) {
                 correct++;
                 std::cout << labels[j] << " ";
-                break;
+                //break;
             }
         }
     }
@@ -215,7 +215,7 @@ int main(int argc, char **argv)
     // Represent results
     //===================
     const float time_us_per_query = stopw.getElapsedTimeMicro() / opt.nq;
-    std::cout << "Recall@" << opt.k << ": " << 1.0f * correct / opt.nq << std::endl;
+    std::cout << "Recall@" << opt.k << ": " << 1.0f * correct / (opt.nq * opt.k) << std::endl;
     std::cout << "Time per query: " << time_us_per_query << " us" << std::endl;
 
     delete index;
