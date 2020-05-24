@@ -163,8 +163,9 @@ namespace ivfhnsw {
       * sub-vectors and stored separately for each subvector.
       *
     */
-    void IndexIVF_HNSW::search(size_t k, const float *x, float *distances, long *labels)
+    void IndexIVF_HNSW::search(size_t k, const float *x, float *distances, long *labels, std::unordered_set<idx_t> g)
     {
+        size_t visited_gd = 0;
         float query_centroid_dists[nprobe]; // Distances to the coarse centroids.
         idx_t centroid_idxs[nprobe];        // Indices of the nearest coarse centroids
 
@@ -200,8 +201,11 @@ namespace ivfhnsw {
             // Decode the norms of each vector in the list
             norm_pq->decode(norm_code, norms.data(), group_size);
 
-            std::cout << ids[centroid_idx].size() << "_" << i << " ";
+            //std::cout << ids[centroid_idx].size() << "_" << i << " ";
             for (size_t j = 0; j < group_size; j++) {
+                if (g.count(id[j]) != 0){
+                    visited_gd += 1;
+                }
                 const float term3 = 2 * pq_L2sqr(code + j * code_size);
                 const float dist = term1 + norms[j] - term3; //term2 = norms[j]
                 if (dist < distances[0]) {
@@ -213,6 +217,7 @@ namespace ivfhnsw {
             if (ncode >= max_codes)
                 break;
         }
+        std::cout<<"The number of visited gt is " << visited_gd << std::endl;
         if (do_opq)
             delete const_cast<float *>(query);
     }
