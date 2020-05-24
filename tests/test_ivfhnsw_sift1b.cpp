@@ -190,7 +190,7 @@ int main(int argc, char **argv)
     long labels[opt.k];
 
     StopW stopw = StopW();
-    size_t sum_visited_gt;
+    size_t sum_visited_gt = 0;
     size_t visited_gt;
     for (size_t i = 0; i < opt.nq; i++) {        
         std::priority_queue<std::pair<float, idx_t >> gt(answers[i]);
@@ -211,7 +211,7 @@ int main(int argc, char **argv)
                 //std::cout << labels[j] << " ";
             }
         }
-        std::cout << "Now correct and visited gt is " << correct << " / " << sum_visited_gt << " / " << opt.nq * opt.k << std::endl;
+        std::cout << "Now correct and visited gt is " << correct << " / " << sum_visited_gt << " / " << i * opt.k << std::endl;
     }
 
     //===================
