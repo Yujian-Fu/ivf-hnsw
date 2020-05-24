@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <queue>
 #include <unordered_set>
+#include<assert.h>
 
 #include <ivf-hnsw/IndexIVF_HNSW.h>
 #include <ivf-hnsw/Parser.h>
@@ -214,6 +215,7 @@ int main(int argc, char **argv)
                 gt.pop();
             }
             
+            assert (g.size() == opt.k);
             index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, visited_gt);
             sum_visited_gt += visited_gt;
             std::cout << sum_visited_gt << "_" << i << "_" << visited_gt << " ";
