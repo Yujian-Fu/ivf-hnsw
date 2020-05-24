@@ -243,10 +243,14 @@ int main(int argc, char **argv) {
         }
 
         for (size_t j = 0; j < opt.k; j++)
+        {
+            std::cout << labels[j] << " ";
             if (g.count(labels[j]) != 0) {
                 correct++;
                 break;
             }
+        }
+
     }
     //===================
     // Represent results 
