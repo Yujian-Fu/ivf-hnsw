@@ -186,7 +186,7 @@ int main(int argc, char **argv)
     long labels[opt.k];
 
     StopW stopw = StopW();
-    size_t visited_gt
+    size_t visited_gt;
     for (size_t i = 0; i < opt.nq; i++) {
         
 
