@@ -185,6 +185,7 @@ namespace ivfhnsw {
         faiss::maxheap_heapify(k, distances, labels);
 
         size_t ncode = 0;
+        
         for (size_t i = 0; i < nprobe; i++) {
             const idx_t centroid_idx = centroid_idxs[i];
             const size_t group_size = norm_codes[centroid_idx].size();
