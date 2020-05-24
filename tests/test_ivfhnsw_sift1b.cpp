@@ -204,9 +204,9 @@ int main(int argc, char **argv)
         
         index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g);
         std::cout << "The unordered set size is " << g.size() << std::endl;
-        for (size_t temp = 0; temp < opt.k; temp++){
+        /*for (size_t temp = 0; temp < opt.k; temp++){
             std::cout << labels[temp] << " " << std::endl;
-        }
+        }*/
         for (size_t j = 0; j < opt.k; j++)
         {
             if (g.count(labels[j]) != 0) {
