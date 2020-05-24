@@ -190,10 +190,9 @@ int main(int argc, char **argv)
     long labels[opt.k];
 
     StopW stopw = StopW();
-    //for (size_t i = 0; i < opt.nq; i++) {
-    for (size_t i = 0; i < 10; i++) {
-        std::cout << std::endl;
-        
+    size_t sum_visited_gt;
+    size_t visited_gt;
+    for (size_t i = 0; i < opt.nq; i++) {        
         std::priority_queue<std::pair<float, idx_t >> gt(answers[i]);
         std::unordered_set<idx_t> g;
 
@@ -202,20 +201,17 @@ int main(int argc, char **argv)
             gt.pop();
         }
         
-        index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g);
+        index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, visited_gt);
+        sum_visited_gt += visited_gt;
         std::cout << "The unordered set size is " << g.size() << std::endl;
-        /*for (size_t temp = 0; temp < opt.k; temp++){
-            std::cout << labels[temp] << " " << std::endl;
-        }*/
         for (size_t j = 0; j < opt.k; j++)
         {
             if (g.count(labels[j]) != 0) {
                 correct++;
-                std::cout << labels[j] << " ";
-                //break;
+                //std::cout << labels[j] << " ";
             }
         }
-        std::cout << "Now correct is " << correct << std::endl;
+        std::cout << "Now correct and visited gt is " << correct << " / " << sum_visited_gt << " / " << opt.nq * opt.k << std::endl;
     }
 
     //===================
