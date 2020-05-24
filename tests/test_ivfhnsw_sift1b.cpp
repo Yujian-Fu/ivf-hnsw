@@ -203,7 +203,6 @@ int main(int argc, char **argv)
         
         index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, visited_gt);
         sum_visited_gt += visited_gt;
-        std::cout << "The unordered set size is " << g.size() << std::endl;
         for (size_t j = 0; j < opt.k; j++)
         {
             if (g.count(labels[j]) != 0) {
@@ -211,11 +210,12 @@ int main(int argc, char **argv)
                 //std::cout << labels[j] << " ";
             }
         }
-        std::cout << "Now correct and visited gt is " << correct << " / " << sum_visited_gt << " / " << i * opt.k << std::endl;
     }
+    std::cout << "Now correct and visited gt is " << correct << " / " << sum_visited_gt << " / " << opt.nq * opt.k << std::endl;
+    std::cout << "The number of probe and code size is " << opt.nprobe << " " << opt.max_codes << std::endl;
 
     //===================
-    // Represent results
+    // Represent results 
     //===================
     const float time_us_per_query = stopw.getElapsedTimeMicro() / opt.nq;
     std::cout << "Recall@" << opt.k << ": " << 1.0f * correct / (opt.nq * opt.k) << std::endl;
