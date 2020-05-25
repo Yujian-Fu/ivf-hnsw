@@ -216,12 +216,16 @@ namespace ivfhnsw {
                 }
             }
 
-            for(size_t temp = 0; temp < group_size; temp ++){
+            for(size_t temp = 0; temp < group_size; temp++){
                 if (g.count(id[temp]) != 0){
                     std::cout << "Gt found " << visited_gt << " " << id[temp] << " " << temp << std::endl;
                     visited_gt += 1;
-                    if (visited_gt > 1)
+                    if (visited_gt > 1){
                         std::cout << id[temp] << " " << id[temp+1] << " Something wrong " << std::endl;
+                        std::cout << "The size of g is " << g.size() << " The group size is " << group_size << std::endl;
+                        std::cout << "The temp is " << temp << std::endl;
+                    }
+                        
                 }
             }
             ncode += group_size;
