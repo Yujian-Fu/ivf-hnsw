@@ -180,6 +180,12 @@ namespace ivfhnsw {
             centroid_idxs[i] = coarse.top().second;
             coarse.pop();
         }
+        for (int i = 0; i < nprobe; i++)
+        {
+            std::cout << centroid_idxs[i] << " " << query_centroid_dists[i] << "        ";
+        }
+        std::cout << std::endl;
+
         // Precompute table
         pq->compute_inner_prod_table(query, precomputed_table.data());
 
@@ -202,7 +208,10 @@ namespace ivfhnsw {
             // Decode the norms of each vector in the list
             norm_pq->decode(norm_code, norms.data(), group_size);
 
-            //std::cout << ids[centroid_idx].size() << "_" << i << " ";
+            for (int temp = 0; temp < group_size; temp ++){
+                std::cout << id[temp] << " ";
+            }
+            std::cout << std::endl;
             for (size_t j = 0; j < group_size; j++) {
                 if (g.count(id[j]) != 0){
                     std::cout << "Gt found " << visited_gt << " " << id[j] << std::endl;
