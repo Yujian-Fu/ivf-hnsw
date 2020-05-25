@@ -165,11 +165,11 @@ namespace ivfhnsw {
     */
     void IndexIVF_HNSW::search(size_t k, const float *x, float *distances, long *labels, std::unordered_set<idx_t> g, size_t & visited_gt)
     {
-        StopW stopw = StopW();
         visited_gt = 0;
         float query_centroid_dists[nprobe]; // Distances to the coarse centroids.
         idx_t centroid_idxs[nprobe];        // Indices of the nearest coarse centroids
 
+        StopW stopw = StopW();
         // For correct search using OPQ rotate a query
         const float *query = (do_opq) ? opq_matrix->apply(1, x) : x;
 
@@ -180,14 +180,17 @@ namespace ivfhnsw {
             centroid_idxs[i] = coarse.top().second;
             coarse.pop();
         }
+        double time1 = stopw.getElapsedTimeMicro();
+
+        stopw.reset();
         // Precompute table
         pq->compute_inner_prod_table(query, precomputed_table.data());
-
+        double time2 = stopw.getElapsedTimeMicro();
         // Prepare max heap with k answers
         faiss::maxheap_heapify(k, distances, labels);
 
         size_t ncode = 0;
-
+        stopw.reset();
         for (size_t i = 0; i < nprobe; i++) {
             const idx_t centroid_idx = centroid_idxs[i];
             const size_t group_size = norm_codes[centroid_idx].size();
@@ -210,22 +213,13 @@ namespace ivfhnsw {
                 }
             }
 
-            for(size_t temp = 0; temp < group_size; temp++){
-                if (g.count(id[temp]) != 0){
-                    std::cout << "Gt found " << visited_gt << " " << id[temp] << " " << temp << std::endl;
-                    visited_gt += 1;
-                    if (visited_gt > 1){
-                        std::cout << id[temp] << " " << id[temp+1] << " Something wrong " << std::endl;
-                        std::cout << "The size of g is " << g.size() << " The group size is " << group_size << std::endl;
-                        std::cout << "The temp is " << temp << std::endl;
-                    }
-                        
-                }
-            }
             ncode += group_size;
             if (ncode >= max_codes)
                 break;
         }
+        double time3 = stopw.getElapsedTimeMicro();
+        double time_sum = time1 + time2 + time3;
+        std::cout << "The searching time proportion is: VQ: " << time1 / time_sum << " Precompute table: " << time2 / time_sum << " Base vector compare: " << time3 / time_sum << std::endl;
         if (do_opq)
             delete const_cast<float *>(query);
     }
