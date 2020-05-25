@@ -214,7 +214,7 @@ namespace ivfhnsw {
             std::cout << std::endl;
             for (size_t j = 0; j < group_size; j++) {
                 if (g.count(id[j]) != 0){
-                    std::cout << "Gt found " << visited_gt << " " << id[j] << std::endl;
+                    std::cout << "Gt found " << visited_gt << " " << id[j] << " " << j << std::endl;
                     visited_gt += 1;
                 }
                 const float term3 = 2 * pq_L2sqr(code + j * code_size);
