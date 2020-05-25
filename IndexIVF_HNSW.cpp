@@ -207,20 +207,21 @@ namespace ivfhnsw {
 
             // Decode the norms of each vector in the list
             norm_pq->decode(norm_code, norms.data(), group_size);
-
-            std::cout << std::endl;
             for (size_t j = 0; j < group_size; j++) {
-                if (g.count(id[j]) != 0){
-                    std::cout << "Gt found " << visited_gt << " " << id[j] << " " << j << std::endl;
-                    visited_gt += 1;
-                    if (visited_gt > 1)
-                        std::cout << id[j] << " " << id[j+1] << "Something wrong " << std::endl;
-                }
                 const float term3 = 2 * pq_L2sqr(code + j * code_size);
                 const float dist = term1 + norms[j] - term3; //term2 = norms[j]
                 if (dist < distances[0]) {
                     faiss::maxheap_pop(k, distances, labels);
                     faiss::maxheap_push(k, distances, labels, dist, id[j]);
+                }
+            }
+
+            for(size_t temp = 0; temp < group_size; temp ++){
+                if (g.count(id[temp]) != 0){
+                    std::cout << "Gt found " << visited_gt << " " << id[temp] << " " << temp << std::endl;
+                    visited_gt += 1;
+                    if (visited_gt > 1)
+                        std::cout << id[temp] << " " << id[temp+1] << " Something wrong " << std::endl;
                 }
             }
             ncode += group_size;
