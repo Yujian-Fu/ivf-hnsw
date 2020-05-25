@@ -182,11 +182,12 @@ int main(int argc, char **argv)
 
         //5, 10, 20, 30, 30, 40, 50, 60, 60, 70, 80, 80, 90, 100, 100, 
         //10000, 10000, 10000, 10000, 20000, 20000, 20000, 30000, 40000, 40000, 50000, 60000, 60000, 70000, 80000, 
-        int nprobe_list[5] = {90, 120, 120, 140, 150};
+        // when the nprobe is set larger than 100, then there is error in visited gt
+        /*int nprobe_list[5] = {90, 120, 120, 140, 150};
         int max_codes_list[5] = {70000, 70000, 80000, 100000, 100000};
         for (int para = 0; para < 5; para++){
             opt.nprobe = nprobe_list[para];
-            opt.max_codes = max_codes_list[para];
+            opt.max_codes = max_codes_list[para];*/
 
         //=======================
         // Set search parameters 
@@ -236,7 +237,6 @@ int main(int argc, char **argv)
         const float time_us_per_query = stopw.getElapsedTimeMicro() / opt.nq;
         std::cout << "Recall@" << opt.k << ": " << 1.0f * correct / (opt.nq * opt.k) << std::endl;
         std::cout << "Time per query: " << time_us_per_query << " us" << std::endl << std::endl;
-        }
     }
     delete index;
     return 0;
