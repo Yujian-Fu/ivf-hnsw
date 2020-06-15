@@ -169,7 +169,7 @@ int main(int argc, char **argv)
     //===================
     // Parse groundtruth
     //===================
-    int k_list[3] = {100, 1, 10};
+    int k_list[3] = {10, 100, 1};
     for (int k_value = 0; k_value < 3; k_value++){
         opt.k = k_list[k_value];
 
@@ -190,6 +190,10 @@ int main(int argc, char **argv)
         //========
         // Search 
         //========
+        std::vector<uint32_t> groundtruth(opt.nq * opt.ngt);
+        std::ifstream gt_input(opt.path_gt, std::ios::binary);
+        readXvec<uint32_t>(gt_input, groundtruth.data(), opt.ngt, opt.nq);
+
         size_t correct = 0;
         float distances[opt.k];
         long labels[opt.k];
@@ -208,7 +212,7 @@ int main(int argc, char **argv)
             }
             
             assert (g.size() == opt.k);
-            index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, visited_gt);
+            index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, visited_gt, groundtruth.data());
             sum_visited_gt += visited_gt;
             for (size_t j = 0; j < opt.k; j++)
             {
