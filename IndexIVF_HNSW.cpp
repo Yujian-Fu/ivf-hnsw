@@ -217,6 +217,28 @@ namespace ivfhnsw {
             if (ncode >= max_codes)
                 break;
         }
+
+        std::cout << "Checking the pq code " << std::endl;
+
+        std::vector<float> base_dataset(128);
+        std::ifstream base_input("/home/y/yujianfu/ivf-hnsw/data/SIFT1B/bigann_base.bvecs", std::ios::binary);
+        
+
+        for (size_t i = 0; i < k; i++){
+            size_t group_id = labels[i];
+            uint32_t dimension;
+            std::vector<uint8_t> base_vector(128);
+            std::vector<float> base_vector_float(128);
+            base_input.seekg(group_id * sizeof(uint32_t) + group_id * 128 * sizeof(uint8_t), std::ios::beg);
+            base_input.read((char *) & dimension, sizeof(uint32_t));
+            assert(dimension = 128);
+            base_input.read((char *) base_vector.data(), dimension * sizeof(uint8_t));
+            std::vector<float> distance_vector(dimension);
+            for (size_t j = 0; j < dimension; j++){base_vector_float[j] = base_vector[j];}
+            faiss::fvec_madd(dimension, x, -1, base_vector_float.data(), distance_vector.data());
+            std::cout << group_id << " " << distances[i] << " " << faiss::fvec_norm_L2sqr(distance_vector.data(), dimension) << " ";
+        }
+        std::cout << std::endl;
         //double time3 = stopw.getElapsedTimeMicro();
         //double time_sum = time1 + time2 + time3;
         //std::cout << "The searching time proportion is: VQ: " << time1 / time_sum << " Precompute table: " << time2 / time_sum << " Base vector compare: " << time3 / time_sum << std::endl;
