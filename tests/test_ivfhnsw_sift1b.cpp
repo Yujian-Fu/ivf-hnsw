@@ -215,7 +215,7 @@ int main(int argc, char **argv)
 
             std::cout << "The ground truth: " << std::endl;
             for (size_t j = 0; j < opt.k; j++){
-                std::cout << groundtruth[i * opt.ngt + j] << " ";
+                //std::cout << groundtruth[i * opt.ngt + j] << " ";
             }
             std::cout << std::endl;
 
@@ -228,6 +228,8 @@ int main(int argc, char **argv)
                     //std::cout << labels[j] << " ";
                 }
             }
+            std::cout << "Now the correct is: " << correct << std::endl;
+            exit(0);
         }
         std::cout << "Now correct and visited gt is " << correct << " / " << sum_visited_gt << " / " << opt.nq * opt.k << std::endl;
         std::cout << "The number of probe and code size is " << opt.nprobe << " " << opt.max_codes << std::endl;

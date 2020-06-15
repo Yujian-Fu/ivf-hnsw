@@ -208,7 +208,7 @@ namespace ivfhnsw {
 
             // Decode the norms of each vector in the list
             norm_pq->decode(norm_code, norms.data(), group_size);
-            std::cout << "Search in group: " << centroid_idx << std::endl;
+            //std::cout << "Search in group: " << centroid_idx << std::endl;
             for (size_t j = 0; j < group_size; j++) {
                 const float term3 = 2 * pq_L2sqr(code + j * code_size);
                 const float dist = term1 + norms[j] - term3; //term2 = norms[j]
@@ -225,7 +225,7 @@ namespace ivfhnsw {
                 for (size_t j = 0; j < dimension; j++){base_vector_float[j] = base_vector[j];}
                 faiss::fvec_madd(dimension, x, -1, base_vector_float.data(), distance_vector.data());
                 float actual_dist = faiss::fvec_norm_L2sqr(distance_vector.data(), dimension);
-                std::cout << group_id << " " << dist << " ";
+                //std::cout << group_id << " " << dist << " ";
                 // << actual_dist << " " << abs(dist - actual_dist) / actual_dist << "  ";
 
                 if (dist < distances[0]) {
