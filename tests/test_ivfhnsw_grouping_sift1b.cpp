@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
         std::cout << "Loading index from " << opt.path_index << std::endl;
         index->read(opt.path_index);
     } else {
-        // Adding groups to index 
+        // Adding groups to index
         std::cout << "Adding groups to index" << std::endl;
         StopW stopw = StopW();
 

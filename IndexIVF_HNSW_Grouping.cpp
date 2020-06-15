@@ -139,7 +139,7 @@ namespace ivfhnsw
       *  d = (1 - α) * (|| x - y_C ||^2 - || y_C ||^2) + α * (|| x - y_N ||^2 - || y_N ||^2) + || y_S + y_R ||^2 - 2 * (x|y_R)
       *      -----------------------------------------   -----------------------------------   -----------------   -----------
       *                         term 1                                 term 2                        term 3          term 4
-      *
+      * 
       * We use the following decomposition:
       * - term 1 is the distance to the coarse centroid, that is computed
       *   during the 1st stage search in the HNSW graph, minus the norm of the coarse centroid.
