@@ -212,6 +212,13 @@ int main(int argc, char **argv)
             }
             
             assert (g.size() == opt.k);
+
+            std::cout << "The ground truth: " << std::endl;
+            for (size_t j = 0; j < opt.k; j++){
+                std::cout << groundtruth[i * opt.ngt + j] << " ";
+            }
+            std::cout << std::endl;
+
             index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, visited_gt, groundtruth.data());
             sum_visited_gt += visited_gt;
             for (size_t j = 0; j < opt.k; j++)

@@ -225,7 +225,7 @@ namespace ivfhnsw {
                 for (size_t j = 0; j < dimension; j++){base_vector_float[j] = base_vector[j];}
                 faiss::fvec_madd(dimension, x, -1, base_vector_float.data(), distance_vector.data());
                 float actual_dist = faiss::fvec_norm_L2sqr(distance_vector.data(), dimension);
-                std::cout << group_id <<  dist << " " << actual_dist << " ";
+                std::cout << group_id << " " << dist << " ";
                 // << actual_dist << " " << abs(dist - actual_dist) / actual_dist << "  ";
 
                 if (dist < distances[0]) {
