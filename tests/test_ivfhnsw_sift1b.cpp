@@ -219,7 +219,7 @@ int main(int argc, char **argv)
             }
             std::cout << std::endl;
 
-            index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, visited_gt, groundtruth.data());
+            index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, visited_gt, groundtruth.data()+ i * opt.ngt);
             sum_visited_gt += visited_gt;
             for (size_t j = 0; j < opt.k; j++)
             {
