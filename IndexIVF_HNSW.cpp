@@ -191,7 +191,6 @@ namespace ivfhnsw {
 
         size_t ncode = 0;
         //stopw.reset();
-        std::cout << "Checking the pq code " << std::endl;
         std::ifstream base_input("/home/y/yujianfu/ivf-hnsw/data/SIFT1B/bigann_base.bvecs", std::ios::binary);
 
 
@@ -278,7 +277,6 @@ namespace ivfhnsw {
         }
         std::cout << std::endl;
 
-        exit(0);
         //double time3 = stopw.getElapsedTimeMicro();
         //double time_sum = time1 + time2 + time3;
         //std::cout << "The searching time proportion is: VQ: " << time1 / time_sum << " Precompute table: " << time2 / time_sum << " Base vector compare: " << time3 / time_sum << std::endl;

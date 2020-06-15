@@ -229,6 +229,7 @@ int main(int argc, char **argv)
                 }
             }
             std::cout << "Now the correct is: " << correct << std::endl;
+            if (i == 10)
             exit(0);
         }
         std::cout << "Now correct and visited gt is " << correct << " / " << sum_visited_gt << " / " << opt.nq * opt.k << std::endl;
