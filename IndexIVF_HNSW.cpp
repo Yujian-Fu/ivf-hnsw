@@ -191,6 +191,10 @@ namespace ivfhnsw {
 
         size_t ncode = 0;
         //stopw.reset();
+        std::cout << "Checking the pq code " << std::endl;
+        std::ifstream base_input("/home/y/yujianfu/ivf-hnsw/data/SIFT1B/bigann_base.bvecs", std::ios::binary);
+
+
         for (size_t i = 0; i < nprobe; i++) {
             const idx_t centroid_idx = centroid_idxs[i];
             const size_t group_size = norm_codes[centroid_idx].size();
@@ -207,21 +211,33 @@ namespace ivfhnsw {
             for (size_t j = 0; j < group_size; j++) {
                 const float term3 = 2 * pq_L2sqr(code + j * code_size);
                 const float dist = term1 + norms[j] - term3; //term2 = norms[j]
+
+                size_t group_id = id[i];
+                uint32_t dimension;
+                std::vector<uint8_t> base_vector(128);
+                std::vector<float> base_vector_float(128);
+                base_input.seekg(group_id * sizeof(uint32_t) + group_id * 128 * sizeof(uint8_t), std::ios::beg);
+                base_input.read((char *) & dimension, sizeof(uint32_t));
+                assert(dimension = 128);
+                base_input.read((char *) base_vector.data(), dimension * sizeof(uint8_t));
+                std::vector<float> distance_vector(dimension);
+                for (size_t j = 0; j < dimension; j++){base_vector_float[j] = base_vector[j];}
+                faiss::fvec_madd(dimension, x, -1, base_vector_float.data(), distance_vector.data());
+                float actual_dist = faiss::fvec_norm_L2sqr(distance_vector.data(), dimension);
+                std::cout << group_id << " " << dist << " " << actual_dist << " " << abs(dist - actual_dist) / actual_dist;
+
                 if (dist < distances[0]) {
                     faiss::maxheap_pop(k, distances, labels);
                     faiss::maxheap_push(k, distances, labels, dist, id[j]);
                 }
             }
+            std::cout << std::endl;
 
             ncode += group_size;
             if (ncode >= max_codes)
                 break;
         }
 
-        std::cout << "Checking the pq code " << std::endl;
-
-        std::vector<float> base_dataset(128);
-        std::ifstream base_input("/home/y/yujianfu/ivf-hnsw/data/SIFT1B/bigann_base.bvecs", std::ios::binary);
         
 
         for (size_t i = 0; i < k; i++){
@@ -236,9 +252,11 @@ namespace ivfhnsw {
             std::vector<float> distance_vector(dimension);
             for (size_t j = 0; j < dimension; j++){base_vector_float[j] = base_vector[j];}
             faiss::fvec_madd(dimension, x, -1, base_vector_float.data(), distance_vector.data());
-            std::cout << group_id << " " << distances[i] << " " << faiss::fvec_norm_L2sqr(distance_vector.data(), dimension) << " ";
+            float actual_dist = faiss::fvec_norm_L2sqr(distance_vector.data(), dimension);
+            std::cout << group_id << " " << distances[i] << " " << actual_dist << " " << abs(distances[i] - actual_dist) / actual_dist;
         }
         std::cout << std::endl;
+        exit(0);
         //double time3 = stopw.getElapsedTimeMicro();
         //double time_sum = time1 + time2 + time3;
         //std::cout << "The searching time proportion is: VQ: " << time1 / time_sum << " Precompute table: " << time2 / time_sum << " Base vector compare: " << time3 / time_sum << std::endl;

@@ -169,7 +169,7 @@ int main(int argc, char **argv)
     //===================
     // Parse groundtruth
     //===================
-    int k_list[3] = {1, 10, 100};
+    int k_list[3] = {100, 1, 10};
     for (int k_value = 0; k_value < 3; k_value++){
         opt.k = k_list[k_value];
 
