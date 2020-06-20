@@ -219,7 +219,7 @@ int main(int argc, char **argv)
             }
             std::cout << std::endl;
 
-            index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, visited_gt, groundtruth.data()+ i * opt.ngt);
+            index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, groundtruth.data()+ i * opt.ngt);
             sum_visited_gt += visited_gt;
             for (size_t j = 0; j < opt.k; j++)
             {
@@ -229,7 +229,7 @@ int main(int argc, char **argv)
                 }
             }
             if (i == 10){
-                exot(0);
+                exit(0);
             }
             std::cout << "Now the correct is: " << correct << std::endl;
             if (i == 10)

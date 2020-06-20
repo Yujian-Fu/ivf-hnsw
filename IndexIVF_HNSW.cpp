@@ -165,7 +165,7 @@ namespace ivfhnsw {
       * sub-vectors and stored separately for each subvector.
       *
     */
-    void IndexIVF_HNSW::search(size_t k, const float *x, float *distances, long *labels, std::unordered_set<idx_t> g, size_t & visited_gt, uint32_t * groundtruth)
+    void IndexIVF_HNSW::search(size_t k, const float *x, float *distances, long *labels, std::unordered_set<idx_t> g, uint32_t * groundtruth)
     {
         std::unordered_set<uint32_t> groundtruth_set;
         for (size_t i = 0; i < k; i++){
@@ -266,14 +266,14 @@ namespace ivfhnsw {
 
         //Compute the sort of computed approximate distance
         std::vector<idx_t> search_dist_index(visited_vectors);
-        uint32_t x = 0;
-        std::iota(search_dist_index.begin(),search_dist_index.end(),x++);
+        uint32_t temp = 0;
+        std::iota(search_dist_index.begin(),search_dist_index.end(),temp++);
         std::sort( search_dist_index.begin(),search_dist_index.end(), [&](int i,int j){return query_search_dists[i]<query_search_dists[j];} );
 
         //Compute the distance sort for actual distance
         std::vector<idx_t> actual_dist_index(visited_vectors);
-        x = 0;
-        std::iota(actual_dist_index.begin(), actual_dist_index.end(), x++);
+        temp = 0;
+        std::iota(actual_dist_index.begin(), actual_dist_index.end(), temp++);
         std::sort( actual_dist_index.begin(),actual_dist_index.end(), [&](int i,int j){return query_actual_dists[i]<query_actual_dists[j];} );
 
         std::cout << "The visited gt proportion: "<< visited_gt / k << std::endl;
@@ -281,11 +281,12 @@ namespace ivfhnsw {
         for (size_t i = 0; i < 100; i ++){
             std::cout << query_search_labels[search_dist_index[i]] << "_" << query_search_dists[search_dist_index[i]] << " ";
         }
+        std::cout << std::endl;
 
         for (size_t i = 0; i < 100; i++){
             std::cout << query_search_labels[search_dist_index[i]] << "_" << query_actual_dists[search_dist_index[i]] << " ";
         }
-        std::endl;
+        std::cout << std::endl;
 
         //double time3 = stopw.getElapsedTimeMicro();
         //double time_sum = time1 + time2 + time3;
