@@ -228,6 +228,9 @@ int main(int argc, char **argv)
                     //std::cout << labels[j] << " ";
                 }
             }
+            if (i == 10){
+                exot(0);
+            }
             std::cout << "Now the correct is: " << correct << std::endl;
             if (i == 10)
             exit(0);
