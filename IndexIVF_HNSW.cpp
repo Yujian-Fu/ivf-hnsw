@@ -243,6 +243,7 @@ namespace ivfhnsw {
                 faiss::fvec_madd(dimension, x, -1, base_vector_float.data(), distance_vector.data());
                 float actual_dist = faiss::fvec_norm_L2sqr(distance_vector.data(), dimension);
                 
+                query_search_labels[visited_vectors] = group_id;
                 query_search_dists[visited_vectors] = dist;
                 query_actual_dists[visited_vectors] = actual_dist;
                 visited_vectors++;
