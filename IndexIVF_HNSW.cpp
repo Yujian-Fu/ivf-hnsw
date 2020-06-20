@@ -285,9 +285,13 @@ namespace ivfhnsw {
         std::cout << std::endl;
 
         for (size_t i = 0; i < 100; i++){
-            std::cout << query_search_labels[search_dist_index[i]] << "_" << query_actual_dists[search_dist_index[i]] << " ";
+            std::cout << query_search_labels[actual_dist_index[i]] << "_" << query_actual_dists[search_dist_index[i]] << " ";
         }
         std::cout << std::endl;
+
+        for (size_t i = 0; i < k; i++){
+            labels[i] = query_search_labels[search_dist_index[i]];
+        }
 
         //double time3 = stopw.getElapsedTimeMicro();
         //double time_sum = time1 + time2 + time3;
