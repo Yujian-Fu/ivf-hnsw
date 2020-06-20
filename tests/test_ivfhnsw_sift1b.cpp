@@ -217,17 +217,19 @@ int main(int argc, char **argv)
             for (size_t j = 0; j < opt.k; j++){
                 std::cout << groundtruth[i * opt.ngt + j] << " ";
             }
-            std::cout << std::endl;
+            
 
             index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, groundtruth.data()+ i * opt.ngt);
             sum_visited_gt += visited_gt;
+            std::cout << std::endl;
             for (size_t j = 0; j < opt.k; j++)
             {
                 if (g.count(labels[j]) != 0) {
                     correct++;
-                    //std::cout << labels[j] << " ";
+                    std::cout << labels[j] << " ";
                 }
             }
+            std::cout << std::endl;
             if (i == 10){
                 exit(0);
             }

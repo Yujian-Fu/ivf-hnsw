@@ -277,7 +277,7 @@ namespace ivfhnsw {
         std::iota(actual_dist_index.begin(), actual_dist_index.end(), temp++);
         std::sort( actual_dist_index.begin(),actual_dist_index.end(), [&](int i,int j){return query_actual_dists[i]<query_actual_dists[j];} );
 
-        std::cout << "The visited gt proportion: "<< visited_gt / k << std::endl;
+        std::cout << "The visited gt proportion: "<< float(visited_gt) / k << std::endl;
         std::cout << "The computed distance, label, actual distance label, groundtruth label are" << std::endl;
         for (size_t i = 0; i < 100; i ++){
             std::cout << query_search_labels[search_dist_index[i]] << "_" << query_search_dists[search_dist_index[i]] << " ";
