@@ -280,7 +280,7 @@ namespace ivfhnsw {
                         std::cout << target_centroid[temp] << " ";
                     }
                     std::cout << std::endl;
-                    std::cout << group_id << " " << query_centroid_dists[i] << " " << centroid_norms[centroid_idx] << " " << norms[j] << " " << term3 << " " << dist << "     ";
+                    std::cout << group_id << " " << query_centroid_dists[i] << " " << centroid_norms[centroid_idx] << " " << norms[j] << " " << term3 << " " << dist << "     " << std::endl;;
                     visited_gt++;
                 }
                     
