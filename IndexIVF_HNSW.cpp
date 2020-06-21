@@ -275,8 +275,9 @@ namespace ivfhnsw {
                 if (groundtruth_set.count(id[j]) != 0)
                 {
                     std::cout << "Confirm the centroid: " << std::endl;
+                    const float * target_centroid = quantizer->getDataByInternalId(centroid_idx);
                     for (size_t temp = 0; temp < 10; temp ++){
-                        std::cout << quantizer->getDataByInternalId(centroid_idx)[temp] << " ";
+                        std::cout << target_centroid[temp] << " ";
                     }
                     std::cout << std::endl;
                     std::cout << group_id << " " << query_centroid_dists[i] << " " << centroid_norms[centroid_idx] << " " << norms[j] << " " << term3 << " " << dist << "     ";
