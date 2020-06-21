@@ -274,6 +274,11 @@ namespace ivfhnsw {
                 visited_vectors++;
                 if (groundtruth_set.count(id[j]) != 0)
                 {
+                    std::cout << "Confirm the centroid: " << std::endl;
+                    for (size_t temp = 0; temp < 10; temp ++){
+                        std::cout << quantizer->getDataByInternalId(group_id)[temp] << " ";
+                    }
+                    std::cout << std::endl;
                     std::cout << group_id << " " << query_centroid_dists[i] << " " << centroid_norms[centroid_idx] << " " << norms[j] << " " << term3 << " " << dist << "     ";
                     visited_gt++;
                 }
