@@ -196,6 +196,31 @@ namespace ivfhnsw {
         // Prepare max heap with k answers
         //faiss::maxheap_heapify(k, distances, labels);
 
+        std::cout << "The query vector: " << std::endl;
+        for (size_t temp = 0; temp < 10; temp ++){
+            std::cout << query[temp] << " ";
+        }
+        std::cout << std::endl;
+
+        std::cout << "The norm pq centroids: " << std::endl;
+        for(size_t temp = 0; temp < 100; temp++){
+            std::cout << norm_pq->centroids[temp] << " ";
+        }
+        std::cout << std::endl;
+
+        std::cout << "The pq centroids: " << std::endl;
+        for(size_t temp = 0; temp < 100; temp++){
+            std::cout << pq->centroids[temp] << " ";
+        }
+        std::cout << std::endl;
+
+        std::cout << "The prod table: " << std::endl;
+        for (size_t temp = 0; temp < 10; temp++){
+            std::cout << precomputed_table[temp] << " " << std::endl;
+        }
+        std::cout << std::endl;
+
+
         size_t ncode = 0;
         //stopw.reset();
         std::ifstream base_input("/home/y/yujianfu/ivf-hnsw/data/SIFT1B/bigann_base.bvecs", std::ios::binary);
@@ -249,7 +274,7 @@ namespace ivfhnsw {
                 visited_vectors++;
                 if (groundtruth_set.count(id[j]) != 0)
                 {
-                    std::cout << group_id << " " << term1 << " " << norms[j] << " " << term3 << " " << dist << "     ";
+                    std::cout << group_id << " " << query_centroid_dists[i] << " " << centroid_norms[centroid_idx] << " " << norms[j] << " " << term3 << " " << dist << "     ";
                     visited_gt++;
                 }
                     
