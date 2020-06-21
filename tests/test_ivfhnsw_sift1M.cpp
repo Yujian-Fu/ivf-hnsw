@@ -217,6 +217,7 @@ int main(int argc, char **argv)
             for (size_t j = 0; j < opt.k; j++){
                 std::cout << groundtruth[i * opt.ngt + j] << " ";
             }
+            std::cout << std::endl;
             
 
             index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, groundtruth.data()+ i * opt.ngt);
