@@ -50,7 +50,7 @@ namespace ivfhnsw {
         std::cout << "Constructing quantizer\n";
         std::ifstream input(path_data, std::ios::binary);
 
-        size_t report_every = 10000;
+        size_t report_every = 1000;
         for (size_t i = 0; i < nc; i++) {
             float mass[d];
             readXvec<float>(input, mass, d);
