@@ -248,7 +248,11 @@ namespace ivfhnsw {
                 query_actual_dists[visited_vectors] = actual_dist;
                 visited_vectors++;
                 if (groundtruth_set.count(id[j]) != 0)
+                {
+                    std::cout << group_id << " " << term1 << " " << norms[j] << " " << term3 << " " << dist << "     ";
                     visited_gt++;
+                }
+                    
                 
                 //std::cout << group_id << " " << dist << " ";
                 // << actual_dist << " " << abs(dist - actual_dist) / actual_dist << "  ";
@@ -260,10 +264,12 @@ namespace ivfhnsw {
                 //}
             }
             
+            
             ncode += group_size;
             if (ncode >= max_codes)
                 break;
         }
+        std::cout << std::endl;
 
         //Compute the sort of computed approximate distance
         std::vector<idx_t> search_dist_index(visited_vectors);
