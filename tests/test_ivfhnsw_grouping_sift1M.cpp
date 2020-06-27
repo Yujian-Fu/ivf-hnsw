@@ -155,7 +155,7 @@ int main(int argc, char **argv) {
             for (size_t b = 0; b < nbatches; b++) {
                 readXvec<float>(base_input, batch.data(), opt.d, batch_size);
                 readXvec<idx_t>(idx_input, idx_batch.data(), batch_size, 1);
-                std::cout << "Read one batch data " << std::endl;
+                
                 for (size_t i = 0; i < batch_size; i++) {
                     if (idx_batch[i] < ngroups_added ||
                         idx_batch[i] >= ngroups_added + groups_per_iter)
