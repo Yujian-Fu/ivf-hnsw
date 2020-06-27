@@ -66,9 +66,9 @@ path_precomputed_idxs="${path_data}/precomputed_idxs_sift1M.ivecs"
 path_edges="${path_model}/hnsw_M${M}_ef${efConstruction}.ivecs"
 path_info="${path_model}/hnsw_M${M}_ef${efConstruction}.bin"
 
-path_pq="${path_model}/pq${code_size}.pq"
-path_norm_pq="${path_model}/norm_pq${code_size}.pq"
-path_index="${path_model}/ivfhnsw_PQ${code_size}.index"
+path_pq="${path_model}/pq${code_size}_nsubc${nsubc}.pq"
+path_norm_pq="${path_model}/norm_pq${code_size}_nsubc${nsubc}.pq"
+path_index="${path_model}/ivfhnsw_PQ${code_size}_nsubc${nsubc}.index"
 
 #######
 # Run #
