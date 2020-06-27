@@ -156,8 +156,13 @@ namespace ivfhnsw
       * Since y_R defined by a product quantizer, it is split across
       * sub-vectors and stored separately for each sub-vector.
     */
-    void IndexIVF_HNSW_Grouping::search(size_t k, const float *x, float *distances, long *labels)
+    void IndexIVF_HNSW_Grouping::search(size_t k, const float *x, float *distances, long *labels, uint32_t * groundtruth)
     {
+        std::unordered_set<uint32_t> groundtruth_set;
+        for(size_t i = 0; i< k; i++){
+            groundtruth_set.insert(groundtruth[i]);
+        }
+
         // Distances to subcentroids. Used for pruning.
         std::vector<float> query_subcentroid_dists;
 
@@ -171,6 +176,7 @@ namespace ivfhnsw
 
         // Find the nearest coarse centroids to the query
         auto coarse = quantizer->searchKnn(query, nprobe);
+
         for (int_fast32_t i = nprobe - 1; i >= 0; i--) {
             idx_t centroid_idx = coarse.top().second;
             centroid_idxs[i] = centroid_idx;
@@ -178,6 +184,13 @@ namespace ivfhnsw
             used_centroid_idxs.push_back(centroid_idx);
             coarse.pop();
         }
+        std::cout << "The selected first level centroids and the dists are: " << std::endl;
+        for (size_t i = 0; i < nprobe; i++){
+            std::cout << centroid_idxs[i] << "_" << query_centroid_dists[centroid_idxs[i]] << " ";
+        }
+        std::cout << std::endl;
+
+
         // Computing threshold for pruning
         float threshold = 0.0;
         if (do_pruning) {
@@ -224,10 +237,55 @@ namespace ivfhnsw
         pq->compute_inner_prod_table(query, precomputed_table.data());
 
         // Prepare max heap with k answers
-        faiss::maxheap_heapify(k, distances, labels);
+        //faiss::maxheap_heapify(k, distances, labels);
+
+
+        std::cout << "The query vector: " << std::endl;
+        for (size_t temp = 0; temp < 10; temp ++){
+            std::cout << query[temp] << " ";
+        }
+        std::cout << std::endl;
+
+        std::cout << "The norm pq centroids: " << std::endl;
+        for(size_t temp = 0; temp < 100; temp++){
+            std::cout << norm_pq->centroids[temp] << " ";
+        }
+        std::cout << std::endl;
+
+        std::cout << "The alphas " << std::endl;
+        for (size_t temp = 0; temp < nc; temp++){
+            std::cout << alphas[temp] << " ";
+        }
+        std::cout << std::endl;
+
+        std::cout << "The pq centroids: " << std::endl;
+        for(size_t temp = 0; temp < 100; temp++){
+            std::cout << pq->centroids[temp] << " ";
+        }
+        std::cout << std::endl;
+
+        std::cout << "The prod table: " << std::endl;
+        for (size_t temp = 0; temp < 10; temp++){
+            std::cout << precomputed_table[temp] << " " << std::endl;
+        }
+        std::cout << std::endl;
+
 
         size_t ncode = 0;
+        std::ifstream base_input("/home/y/yujianfu/ivf-hnsw/data/SIFT1B/bigann_base.bvecs", std::ios::binary);
+        
         const float *qsd = query_subcentroid_dists.data();
+
+        size_t total_size = 0;
+        for (size_t i = 0; i < nprobe; i++){
+            total_size += ids[centroid_idxs[i]].size();
+        }
+
+        std::vector<float> query_search_dists(total_size);
+        std::vector<idx_t> query_search_labels(total_size);
+        std::vector<float> query_actual_dists(total_size);
+        size_t visited_vectors = 0;
+        size_t visited_gt = 0;
 
         for (size_t i = 0; i < nprobe; i++) {
             const idx_t centroid_idx = centroid_idxs[i];
@@ -262,12 +320,43 @@ namespace ivfhnsw
                     norm_pq->decode(norm_code, norms.data(), subgroup_size);
 
                     for (size_t j = 0; j < subgroup_size; j++) {
+
                         const float term4 = 2 * pq_L2sqr(code + j * code_size);
                         const float dist = term1 + term2 + norms[j] - term4; //term3 = norms[j]
-                        if (dist < distances[0]) {
-                            faiss::maxheap_pop(k, distances, labels);
-                            faiss::maxheap_push(k, distances, labels, dist, id[j]);
+                        
+                        size_t origin_id = id[j];
+                        uint32_t dimension;
+                        std::vector<uint8_t> base_vector(128);
+                        std::vector<float> base_vector_float(128);
+                        base_input.seekg(origin_id * sizeof(uint32_t) + origin_id * 128 * sizeof(uint8_t), std::ios::beg);
+                        base_input.read((char *) & dimension, sizeof(uint32_t));
+                        assert(dimension = 128);
+                        base_input.read((char *) base_vector.data(), dimension * sizeof(uint8_t));
+                        std::vector<float> distance_vector(dimension);
+                        for (size_t j = 0; j < dimension; j++){base_vector_float[j] = base_vector[j];}
+                        faiss::fvec_madd(dimension, x, -1, base_vector_float.data(), distance_vector.data());
+                        float actual_dist = faiss::fvec_norm_L2sqr(distance_vector.data(), dimension);
+                        query_search_labels[visited_vectors] = origin_id;
+                        query_search_dists[visited_vectors] = dist;
+                        query_actual_dists[visited_vectors] = actual_dist;
+                        visited_vectors++;
+                        if (groundtruth_set.count(id[j]) != 0)
+                        {
+                            std::cout << "Confirm the centroid: " << std::endl;
+                            const float * target_centroid = quantizer->getDataByInternalId(centroid_idx);
+                            for (size_t temp = 0; temp < 10; temp ++){
+                                std::cout << target_centroid[temp] << " ";
+                            }
+                            std::cout << std::endl;
+                            std::cout << centroid_idx << " " << origin_id << " " << query_centroid_dists[i] << " " << centroid_norms[centroid_idx] << " " << term1 << term2 << norms[j] << " " << term4 << " " << dist << "     " << std::endl;;
+                            visited_gt++;
                         }
+
+
+                        //if (dist < distances[0]) {
+                            //faiss::maxheap_pop(k, distances, labels);
+                            //faiss::maxheap_push(k, distances, labels, dist, id[j]);
+                        //}
                     }
                     ncode += subgroup_size;
                 }

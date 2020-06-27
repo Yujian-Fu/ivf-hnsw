@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
         std::ifstream input(opt.path_base, std::ios::binary);
         std::ofstream output(opt.path_precomputed_idxs, std::ios::binary);
 
-        const uint32_t batch_size = 1000000;
+        const uint32_t batch_size = 10000;
         const size_t nbatches = opt.nb / batch_size;
 
         std::vector<float> batch(batch_size * opt.d);
@@ -132,9 +132,9 @@ int main(int argc, char **argv) {
         std::cout << "Adding groups to index" << std::endl;
         StopW stopw = StopW();
 
-        const size_t batch_size = 1000000;
+        const size_t batch_size = 10000;
         const size_t nbatches = opt.nb / batch_size;
-        size_t groups_per_iter = 250000;
+        size_t groups_per_iter = 2500;
 
         std::vector<uint8_t> batch(batch_size * opt.d);
         std::vector<idx_t> idx_batch(batch_size);
@@ -227,9 +227,9 @@ int main(int argc, char **argv) {
     //========
     // Search 
     //========
-    std::vector<uint32_t> groundtruth(opt.nq * opt.ngt);
+    std::vector<uint32_t> groundtruth (opt.nq * opt.nqt);
     std::ifstream gt_input(opt.path_gt, std::ios::binary);
-    readXvec<uint32_t> (gt_input, groundtruth.data(), opt.ngt, opt.nq); 
+    readXvec<uint32_t>(gt_input, groundtruth.data(), opt.ngt, opt.nq);
 
     size_t correct = 0;
     float distances[opt.k];
@@ -237,7 +237,10 @@ int main(int argc, char **argv) {
 
     StopW stopw = StopW();
     for (size_t i = 0; i < opt.nq; i++) {
-        index->search(opt.k, massQ.data() + i*opt.d, distances, labels, groundtruth.data() + i * opt.ngt);
+        size_t visited_gt = 0;
+        
+
+        index->search(opt.k, massQ.data() + i*opt.d, distances, labels);
         std::priority_queue<std::pair<float, idx_t >> gt(answers[i]);
         std::unordered_set<idx_t> g;
 
@@ -246,20 +249,25 @@ int main(int argc, char **argv) {
             gt.pop();
         }
 
+        assert(g.size() == opt.k);
+
+
+
         for (size_t j = 0; j < opt.k; j++)
         {
             if (g.count(labels[j]) != 0) {
                 correct++;
-                break;
+                std::cout<< labels[j] << " ";
             }
         }
+        std::cout << "Now the correct is: " << correct << std::endl;
 
     }
     //===================
     // Represent results 
     //===================
     const float time_us_per_query = stopw.getElapsedTimeMicro() / opt.nq;
-    std::cout << "Recall@" << opt.k << ": " << 1.0f * correct / opt.nq << std::endl;
+    std::cout << "Recall@" << opt.k << ": " << 1.0f * correct / (opt.nq * opt.k) << std::endl;
     std::cout << "Time per query: " << time_us_per_query << " us" << std::endl;
 
     delete index;
