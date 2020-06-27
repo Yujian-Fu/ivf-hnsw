@@ -480,7 +480,6 @@ namespace ivfhnsw
         std::cout << "Training Residual PQ codebook " << std::endl;
         size_t counter = 0;
         for (auto group : group_map) {
-            std::cout << std::endl << "Test1 with group_map_size " << group_map.size() <<  " / " << counter << std::endl;
             counter ++;
             const idx_t centroid_idx = group.first;
             const float *centroid = quantizer->getDataByInternalId(centroid_idx);
@@ -491,7 +490,6 @@ namespace ivfhnsw
             std::vector<float> centroid_vector_norms(nsubc);
             auto nn_centroids_raw = quantizer->searchKnn(centroid, nsubc + 1);
 
-            std::cout << "Test2" << std::endl;
 
             while (nn_centroids_raw.size() > 1) {
                 centroid_vector_norms[nn_centroids_raw.size() - 2] = nn_centroids_raw.top().first;
@@ -499,38 +497,30 @@ namespace ivfhnsw
                 nn_centroids_raw.pop();
             }
 
-            std::cout << "Test3_1" << std::endl;
             // Compute centroid-neighbor_centroid and centroid-group_point vectors
             std::vector<float> centroid_vectors(nsubc * d);
-            std::cout << "The number of nsubc is " << nsubc << std::endl; 
             for (size_t subc = 0; subc < nsubc; subc++) {
-                std::cout << "Now testing " << subc << std::endl;
                 const float *nn_centroid = quantizer->getDataByInternalId(nn_centroid_idxs[subc]);
                 faiss::fvec_madd(d, nn_centroid, -1., centroid, centroid_vectors.data() + subc * d);
             }
 
-            std::cout << "Test4" << std::endl;
             // Find alphas for vectors
             const float alpha = compute_alpha(centroid_vectors.data(), data.data(), centroid,
                                               centroid_vector_norms.data(), group_size);
 
-            std::cout << "Test5" << std::endl;
             // Compute final subcentroids
             std::vector<float> subcentroids(nsubc * d);
             for (size_t subc = 0; subc < nsubc; subc++)
                 faiss::fvec_madd(d, centroid, alpha, centroid_vectors.data() + subc*d, subcentroids.data() + subc*d);
 
-            std::cout << "Test6" << std::endl;
             // Find subcentroid idx
             std::vector<idx_t> subcentroid_idxs(group_size);
             compute_subcentroid_idxs(subcentroid_idxs.data(), subcentroids.data(), data.data(), group_size);
 
-            std::cout << "Test7" << std::endl;
             // Compute Residuals
             std::vector<float> residuals(group_size * d);
             compute_residuals(group_size, data.data(), residuals.data(), subcentroids.data(), subcentroid_idxs.data());
 
-            std::cout << "Test8" << std::endl;
             for (size_t i = 0; i < group_size; i++) {
                 const idx_t subcentroid_idx = subcentroid_idxs[i];
                 for (size_t j = 0; j < d; j++) {

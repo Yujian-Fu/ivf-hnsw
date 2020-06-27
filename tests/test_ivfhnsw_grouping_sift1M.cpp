@@ -45,11 +45,9 @@ int main(int argc, char **argv) {
     //==================
     // Initialize Index 
     //==================
-    std::cout << "Loading quantizer with  " << opt.path_info << opt.path_edges << std::endl;
     IndexIVF_HNSW_Grouping *index = new IndexIVF_HNSW_Grouping(opt.d, opt.nc, opt.code_size, 8, opt.nsubc);
     index->build_quantizer(opt.path_centroids, opt.path_info, opt.path_edges, opt.M, opt.efConstruction);
     index->do_opq = opt.do_opq;
-    std::cout << "Training PQ with  " << opt.path_pq << opt.path_norm_pq << std::endl;
 
     //==========
     // Train PQ 
