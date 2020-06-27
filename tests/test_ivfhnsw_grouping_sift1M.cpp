@@ -227,7 +227,7 @@ int main(int argc, char **argv) {
     //========
     // Search 
     //========
-    std::vector<uint32_t> groundtruth (opt.nq * opt.nqt);
+    std::vector<uint32_t> groundtruth (opt.nq * opt.ngt);
     std::ifstream gt_input(opt.path_gt, std::ios::binary);
     readXvec<uint32_t>(gt_input, groundtruth.data(), opt.ngt, opt.nq);
 
@@ -240,7 +240,7 @@ int main(int argc, char **argv) {
         size_t visited_gt = 0;
         
 
-        index->search(opt.k, massQ.data() + i*opt.d, distances, labels);
+        index->search(opt.k, massQ.data() + i*opt.d, distances, labels, groundtruth.data()+ i * opt.ngt);
         std::priority_queue<std::pair<float, idx_t >> gt(answers[i]);
         std::unordered_set<idx_t> g;
 

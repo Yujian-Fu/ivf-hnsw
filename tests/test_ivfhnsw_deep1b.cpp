@@ -197,7 +197,7 @@ int main(int argc, char **argv)
             g.insert(gt.top().second);
             gt.pop();
         }
-        index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, visited_gt);
+        //index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, visited_gt);
 
         for (size_t j = 0; j < opt.k; j++)
             if (g.count(labels[j]) != 0) {
