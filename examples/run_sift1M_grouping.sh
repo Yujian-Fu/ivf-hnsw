@@ -13,8 +13,8 @@ efConstruction="500"  # Max number of candidate vertices in priority queue to ob
 
 nb="1000000"       # Number of base vectors
 
-nt="100000"         # Number of learn vectors
-nsubt="100000"         # Number of learn vectors to train (random subset of the learn set)
+nt="1000000"         # Number of learn vectors
+nsubt="1000000"         # Number of learn vectors to train (random subset of the learn set)
 
 nc="10000"           # Number of centroids for HNSW quantizer
 nsubc="64"            # Number of subcentroids per group
@@ -57,7 +57,7 @@ path_data="${PWD}/data/SIFT1M"
 path_model="${PWD}/models/SIFT1M"
 
 path_base="${path_data}/sift_base.fvecs"
-path_learn="${path_data}/sift_learn.fvecs"
+path_learn="${path_data}/sift_base.fvecs"
 path_gt="${path_data}/sift_groundtruth.ivecs"
 path_q="${path_data}/sift_query.fvecs"
 path_centroids="${path_data}/centroids_sift1M.fvecs"
