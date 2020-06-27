@@ -477,7 +477,6 @@ namespace ivfhnsw
         }
 
         // Train Residual PQ
-        std::cout << "Training Residual PQ codebook " << std::endl;
         size_t counter = 0;
         for (auto group : group_map) {
             counter ++;
