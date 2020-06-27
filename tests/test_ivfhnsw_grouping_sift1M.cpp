@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     std::vector<float> massQ(opt.nq * opt.d);
     {
         std::ifstream query_input(opt.path_q, std::ios::binary);
-        readXvecFvec<uint8_t>(query_input, massQ.data(), opt.d, opt.nq);
+        readXvecFvec<float>(query_input, massQ.data(), opt.d, opt.nq);
     }
     //==================
     // Initialize Index 
@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
         std::vector<float> trainvecs(opt.nt * opt.d);
         {
             std::ifstream learn_input(opt.path_learn, std::ios::binary);
-            readXvecFvec<uint8_t>(learn_input, trainvecs.data(), opt.d, opt.nt);
+            readXvecFvec<float>(learn_input, trainvecs.data(), opt.d, opt.nt);
         }
         // Set Random Subset of sub_nt trainvecs
         std::vector<float> trainvecs_rnd_subset(opt.nsubt * opt.d);
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
                 std::cout << "[" << stopw.getElapsedTimeMicro() / 1000000 << "s] "
                           << (100.*i) / nbatches << "%" << std::endl;
             }
-            readXvecFvec<uint8_t>(input, batch.data(), opt.d, batch_size);
+            readXvecFvec<float>(input, batch.data(), opt.d, batch_size);
             index->assign(batch_size, batch.data(), precomputed_idx.data());
 
             output.write((char *) &batch_size, sizeof(uint32_t));
@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
         const size_t nbatches = opt.nb / batch_size;
         size_t groups_per_iter = 2500;
 
-        std::vector<uint8_t> batch(batch_size * opt.d);
+        std::vector<float> batch(batch_size * opt.d);
         std::vector<idx_t> idx_batch(batch_size);
 
         for (size_t ngroups_added = 0; ngroups_added < opt.nc; ngroups_added += groups_per_iter)
@@ -146,7 +146,7 @@ int main(int argc, char **argv) {
             std::cout << "[" << stopw.getElapsedTimeMicro() / 1000000 << "s] "
                       << ngroups_added << " / " << opt.nc << std::endl;
 
-            std::vector<std::vector<uint8_t>> data(groups_per_iter);
+            std::vector<std::vector<float>> data(groups_per_iter);
             std::vector<std::vector<idx_t>> ids(groups_per_iter);
 
             // Iterate through the dataset extracting points from groups,
@@ -155,7 +155,7 @@ int main(int argc, char **argv) {
             std::ifstream idx_input(opt.path_precomputed_idxs, std::ios::binary);
 
             for (size_t b = 0; b < nbatches; b++) {
-                readXvec<uint8_t>(base_input, batch.data(), opt.d, batch_size);
+                readXvec<float>(base_input, batch.data(), opt.d, batch_size);
                 readXvec<idx_t>(idx_input, idx_batch.data(), batch_size, 1);
 
                 for (size_t i = 0; i < batch_size; i++) {
