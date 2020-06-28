@@ -260,6 +260,9 @@ int main(int argc, char **argv) {
             }
         }
         std::cout << "Now the correct is: " << correct << std::endl;
+        if (i == 3){
+            exit(0);
+        }
 
     }
     //===================
