@@ -21,13 +21,13 @@ process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
 (out, err) = process.communicate()
 wgetLink = out.split(',')[0][8:]
 wgetCommand = 'wget ' + wgetLink + ' -O deep1B_queries.fvecs'
-print ("Downloading queries ..."")
+print ("Downloading queries ...")
 process = subprocess.Popen(wgetCommand, stdin=subprocess.PIPE, shell=True)
 process.stdin.write('e')
 process.wait()
 
 # download base files
-for i in xrange(37):
+for i in range(37):
     command = 'curl ' + '"https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=' \
               + yadiskLink + '&path=/base/base_' + str(i).zfill(2) + '"'
     process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
@@ -40,7 +40,7 @@ for i in xrange(37):
     process.wait()
 
 # download learn files
-for i in xrange(14):
+for i in range(14):
     command = 'curl ' + '"https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=' \
               + yadiskLink + '&path=/learn/learn_' + str(i).zfill(2) + '"'
     process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
