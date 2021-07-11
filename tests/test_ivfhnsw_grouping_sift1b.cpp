@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
                 groups_per_iter = opt.nc - ngroups_added;
 
             size_t j = 0;
-            #pragma omp parallel for
+#pragma omp parallel for
             for (size_t i = 0; i < groups_per_iter; i++) {
                 #pragma omp critical
                 {
