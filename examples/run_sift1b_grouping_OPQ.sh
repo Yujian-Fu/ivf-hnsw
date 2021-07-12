@@ -28,7 +28,7 @@ d="128"               # Vector dimension
 # PQ parameters #
 #################
 
-code_size="32"        # Code size per vector in bytes
+code_size="16"        # Code size per vector in bytes
 opq="on"              # Turn on/off opq encoding
 
 #####################
