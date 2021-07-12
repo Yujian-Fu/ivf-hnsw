@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
         std::cout << "Loading index from " << opt.path_index << std::endl;
         index->read(opt.path_index);
     } else {
-        // Adding groups to index
+        // Adding groups to index 
         std::cout << "Adding groups to index" << std::endl;
         StopW stopw = StopW();
 
@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
                 groups_per_iter = opt.nc - ngroups_added;
 
             size_t j = 0;
-#pragma omp parallel for
+            #pragma omp parallel for
             for (size_t i = 0; i < groups_per_iter; i++) {
                 #pragma omp critical
                 {
@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
         index->rotate_quantizer();
     }
     //===================
-    // Parse groundtruth 
+    // Parse groundtruth
     //=================== 
     std::cout << "Parsing groundtruth" << std::endl;
     std::vector<std::priority_queue< std::pair<float, idx_t >>> answers;
@@ -227,17 +227,13 @@ int main(int argc, char **argv) {
     //========
     // Search 
     //========
-    std::vector<uint32_t> groundtruth(opt.nq * opt.ngt);
-    std::ifstream gt_input(opt.path_gt, std::ios::binary);
-    readXvec<uint32_t> (gt_input, groundtruth.data(), opt.ngt, opt.nq); 
-
     size_t correct = 0;
     float distances[opt.k];
     long labels[opt.k];
 
     StopW stopw = StopW();
     for (size_t i = 0; i < opt.nq; i++) {
-        index->search(opt.k, massQ.data() + i*opt.d, distances, labels, groundtruth.data() + i * opt.ngt);
+        index->search(opt.k, massQ.data() + i*opt.d, distances, labels);
         std::priority_queue<std::pair<float, idx_t >> gt(answers[i]);
         std::unordered_set<idx_t> g;
 
@@ -247,13 +243,10 @@ int main(int argc, char **argv) {
         }
 
         for (size_t j = 0; j < opt.k; j++)
-        {
             if (g.count(labels[j]) != 0) {
                 correct++;
                 break;
             }
-        }
-
     }
     //===================
     // Represent results 

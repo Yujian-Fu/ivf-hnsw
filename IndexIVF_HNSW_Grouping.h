@@ -29,7 +29,7 @@ namespace ivfhnsw{
         */
         void add_group(size_t group_idx, size_t group_size, const float *x, const idx_t *ids);
 
-        void search(size_t k, const float *x, float *distances, long *labels, uint32_t * groundtruth);
+        void search(size_t k, const float *x, float *distances, long *labels);
 
         void write(const char *path_index);
         void read(const char *path_index);
