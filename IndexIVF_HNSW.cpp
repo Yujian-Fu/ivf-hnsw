@@ -1,6 +1,4 @@
 #include "IndexIVF_HNSW.h"
-#include "algorithm"
-
 
 namespace ivfhnsw {
 
@@ -50,14 +48,12 @@ namespace ivfhnsw {
         std::cout << "Constructing quantizer\n";
         std::ifstream input(path_data, std::ios::binary);
 
-        size_t report_every = 1000;
+        size_t report_every = 100000;
         for (size_t i = 0; i < nc; i++) {
             float mass[d];
             readXvec<float>(input, mass, d);
             if (i % report_every == 0)
-            {
                 std::cout << i / (0.01 * nc) << " %\n";
-            }
             quantizer->addPoint(mass);
         }
         quantizer->SaveInfo(path_info);
@@ -165,17 +161,11 @@ namespace ivfhnsw {
       * sub-vectors and stored separately for each subvector.
       *
     */
-    void IndexIVF_HNSW::search(size_t k, const float *x, float *distances, long *labels, std::unordered_set<idx_t> g, uint32_t * groundtruth)
+    void IndexIVF_HNSW::search(size_t k, const float *x, float *distances, long *labels)
     {
-        std::unordered_set<uint32_t> groundtruth_set;
-        for (size_t i = 0; i < k; i++){
-            groundtruth_set.insert(groundtruth[i]);
-        }
-
         float query_centroid_dists[nprobe]; // Distances to the coarse centroids.
         idx_t centroid_idxs[nprobe];        // Indices of the nearest coarse centroids
 
-        //StopW stopw = StopW();
         // For correct search using OPQ rotate a query
         const float *query = (do_opq) ? opq_matrix->apply(1, x) : x;
 
@@ -186,56 +176,13 @@ namespace ivfhnsw {
             centroid_idxs[i] = coarse.top().second;
             coarse.pop();
         }
-        //double time1 = stopw.getElapsedTimeMicro();
-
-        //stopw.reset();
         // Precompute table
         pq->compute_inner_prod_table(query, precomputed_table.data());
-        //double time2 = stopw.getElapsedTimeMicro();
 
         // Prepare max heap with k answers
-        //faiss::maxheap_heapify(k, distances, labels);
-
-        std::cout << "The query vector: " << std::endl;
-        for (size_t temp = 0; temp < 10; temp ++){
-            std::cout << query[temp] << " ";
-        }
-        std::cout << std::endl;
-
-        std::cout << "The norm pq centroids: " << std::endl;
-        for(size_t temp = 0; temp < 100; temp++){
-            std::cout << norm_pq->centroids[temp] << " ";
-        }
-        std::cout << std::endl;
-
-        std::cout << "The pq centroids: " << std::endl;
-        for(size_t temp = 0; temp < 100; temp++){
-            std::cout << pq->centroids[temp] << " ";
-        }
-        std::cout << std::endl;
-
-        std::cout << "The prod table: " << std::endl;
-        for (size_t temp = 0; temp < 10; temp++){
-            std::cout << precomputed_table[temp] << " " << std::endl;
-        }
-        std::cout << std::endl;
-
+        faiss::maxheap_heapify(k, distances, labels);
 
         size_t ncode = 0;
-        //stopw.reset();
-        std::ifstream base_input("/home/y/yujianfu/ivf-hnsw/data/SIFT1B/bigann_base.bvecs", std::ios::binary);
-
-        size_t total_size = 0;
-        for (size_t i = 0; i < nprobe; i++){
-            total_size += norm_codes[i].size();
-        }
-        std::vector<float> query_search_dists(total_size);
-        std::vector<idx_t>query_search_labels(total_size);
-        std::vector<float> query_actual_dists(total_size);
-        size_t visited_vectors = 0;
-        size_t visited_gt = 0;
-
-
         for (size_t i = 0; i < nprobe; i++) {
             const idx_t centroid_idx = centroid_idxs[i];
             const size_t group_size = norm_codes[centroid_idx].size();
@@ -247,92 +194,21 @@ namespace ivfhnsw {
             const idx_t *id = ids[centroid_idx].data();
             const float term1 = query_centroid_dists[i] - centroid_norms[centroid_idx];
 
-
             // Decode the norms of each vector in the list
             norm_pq->decode(norm_code, norms.data(), group_size);
-            //std::cout << "Search in group: " << centroid_idx << std::endl;
+
             for (size_t j = 0; j < group_size; j++) {
                 const float term3 = 2 * pq_L2sqr(code + j * code_size);
                 const float dist = term1 + norms[j] - term3; //term2 = norms[j]
-
-                size_t group_id = id[j];
-                uint32_t dimension;
-                std::vector<uint8_t> base_vector(128);
-                std::vector<float> base_vector_float(128);
-                base_input.seekg(group_id * sizeof(uint32_t) + group_id * 128 * sizeof(uint8_t), std::ios::beg);
-                base_input.read((char *) & dimension, sizeof(uint32_t));
-                assert(dimension = 128);
-                base_input.read((char *) base_vector.data(), dimension * sizeof(uint8_t));
-                std::vector<float> distance_vector(dimension);
-                for (size_t j = 0; j < dimension; j++){base_vector_float[j] = base_vector[j];}
-                faiss::fvec_madd(dimension, x, -1, base_vector_float.data(), distance_vector.data());
-                float actual_dist = faiss::fvec_norm_L2sqr(distance_vector.data(), dimension);
-                
-                query_search_labels[visited_vectors] = group_id;
-                query_search_dists[visited_vectors] = dist;
-                query_actual_dists[visited_vectors] = actual_dist;
-                visited_vectors++;
-                if (groundtruth_set.count(id[j]) != 0)
-                {
-                    std::cout << "Confirm the centroid: " << std::endl;
-                    const float * target_centroid = quantizer->getDataByInternalId(centroid_idx);
-                    for (size_t temp = 0; temp < 10; temp ++){
-                        std::cout << target_centroid[temp] << " ";
-                    }
-                    std::cout << std::endl;
-                    std::cout << centroid_idx << " " << group_id << " " << query_centroid_dists[i] << " " << centroid_norms[centroid_idx] << " " << norms[j] << " " << term3 << " " << dist << "     " << std::endl;;
-                    visited_gt++;
+                if (dist < distances[0]) {
+                    faiss::maxheap_pop(k, distances, labels);
+                    faiss::maxheap_push(k, distances, labels, dist, id[j]);
                 }
-                    
-                
-                //std::cout << group_id << " " << dist << " ";
-                // << actual_dist << " " << abs(dist - actual_dist) / actual_dist << "  ";
-
-
-                //if (dist < distances[0]) {
-                    //faiss::maxheap_pop(k, distances, labels);
-                    //faiss::maxheap_push(k, distances, labels, dist, id[j]);
-                //}
             }
-            
-            
             ncode += group_size;
             if (ncode >= max_codes)
                 break;
         }
-        std::cout << std::endl;
-
-        //Compute the sort of computed approximate distance
-        std::vector<idx_t> search_dist_index(visited_vectors);
-        uint32_t temp = 0;
-        std::iota(search_dist_index.begin(),search_dist_index.end(),temp++);
-        std::sort( search_dist_index.begin(),search_dist_index.end(), [&](int i,int j){return query_search_dists[i]<query_search_dists[j];} );
-
-        //Compute the distance sort for actual distance
-        std::vector<idx_t> actual_dist_index(visited_vectors);
-        temp = 0;
-        std::iota(actual_dist_index.begin(), actual_dist_index.end(), temp++);
-        std::sort( actual_dist_index.begin(),actual_dist_index.end(), [&](int i,int j){return query_actual_dists[i]<query_actual_dists[j];} );
-
-        std::cout << "The visited gt proportion: "<< float(visited_gt) / k << std::endl;
-        std::cout << "The computed distance, label, actual distance label, groundtruth label are" << std::endl;
-        for (size_t i = 0; i < 100; i ++){
-            std::cout << query_search_labels[search_dist_index[i]] << "_" << query_search_dists[search_dist_index[i]] << " ";
-        }
-        std::cout << std::endl;
-
-        for (size_t i = 0; i < 100; i++){
-            std::cout << query_search_labels[actual_dist_index[i]] << "_" << query_actual_dists[search_dist_index[i]] << " ";
-        }
-        std::cout << std::endl;
-
-        for (size_t i = 0; i < k; i++){
-            labels[i] = query_search_labels[search_dist_index[i]];
-        }
-
-        //double time3 = stopw.getElapsedTimeMicro();
-        //double time_sum = time1 + time2 + time3;
-        //std::cout << "The searching time proportion is: VQ: " << time1 / time_sum << " Precompute table: " << time2 / time_sum << " Base vector compare: " << time3 / time_sum << std::endl;
         if (do_opq)
             delete const_cast<float *>(query);
     }
@@ -340,7 +216,7 @@ namespace ivfhnsw {
 
     void IndexIVF_HNSW::train_pq(size_t n, const float *x)
     {
-        // Assign train vectors
+        // Assign train vectors 
         std::vector <idx_t> assigned(n);
         assign(n, x, assigned.data());
 

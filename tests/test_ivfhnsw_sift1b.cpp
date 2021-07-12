@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <queue>
 #include <unordered_set>
-#include<assert.h>
 
 #include <ivf-hnsw/IndexIVF_HNSW.h>
 #include <ivf-hnsw/Parser.h>
@@ -18,12 +17,12 @@ using namespace ivfhnsw;
 int main(int argc, char **argv)
 {
     //===============
-    // Parse Options 
+    // Parse Options
     //===============
     Parser opt = Parser(argc, argv);
 
     //==================
-    // Load Groundtruth 
+    // Load Groundtruth
     //==================
     std::cout << "Loading groundtruth from " << opt.path_gt << std::endl;
     std::vector<idx_t> massQA(opt.nq * opt.ngt);
@@ -33,7 +32,7 @@ int main(int argc, char **argv)
     }
 
     //==============
-    // Load Queries 
+    // Load Queries
     //==============
     std::cout << "Loading queries from " << opt.path_q << std::endl;
     std::vector<float> massQ(opt.nq * opt.d);
@@ -169,84 +168,51 @@ int main(int argc, char **argv)
     //===================
     // Parse groundtruth
     //===================
-    int k_list[3] = {10, 100, 1};
-    for (int k_value = 0; k_value < 3; k_value++){
-        opt.k = k_list[k_value];
+    std::cout << "Parsing groundtruth" << std::endl;
+    std::vector<std::priority_queue< std::pair<float, idx_t >>> answers;
+    (std::vector<std::priority_queue< std::pair<float, idx_t >>>(opt.nq)).swap(answers);
+    for (size_t i = 0; i < opt.nq; i++)
+        answers[i].emplace(0.0f, massQA[opt.ngt*i]);
 
-        std::cout << "Parsing groundtruth" << std::endl;
-        std::vector<std::priority_queue< std::pair<float, idx_t >>> answers;
-        (std::vector<std::priority_queue< std::pair<float, idx_t >>>(opt.nq)).swap(answers);
-        for (size_t i = 0; i < opt.nq; i++)
-            for( size_t j = 0; j < opt.k; j++)
-                answers[i].emplace(0.0f, massQA[opt.ngt*i+j]);
+    //=======================
+    // Set search parameters
+    //=======================
+    index->nprobe = opt.nprobe;
+    index->max_codes = opt.max_codes;
+    index->quantizer->efSearch = opt.efSearch;
 
-        //=======================
-        // Set search parameters 
-        //=======================
-        index->nprobe = opt.nprobe;
-        index->max_codes = opt.max_codes;
-        index->quantizer->efSearch = opt.efSearch;
+    //========
+    // Search
+    //========
+    size_t correct = 0;
+    float distances[opt.k];
+    long labels[opt.k];
 
-        //========
-        // Search 
-        //========
-        std::vector<uint32_t> groundtruth(opt.nq * opt.ngt);
-        std::ifstream gt_input(opt.path_gt, std::ios::binary);
-        readXvec<uint32_t>(gt_input, groundtruth.data(), opt.ngt, opt.nq);
+    StopW stopw = StopW();
+    for (size_t i = 0; i < opt.nq; i++) {
+        index->search(opt.k, massQ.data() + i*opt.d, distances, labels);
+        std::priority_queue<std::pair<float, idx_t >> gt(answers[i]);
+        std::unordered_set<idx_t> g;
 
-        size_t correct = 0;
-        float distances[opt.k];
-        long labels[opt.k];
-
-        StopW stopw = StopW();
-        size_t sum_visited_gt = 0;
-        size_t visited_gt = 0;
-        for (size_t i = 0; i < opt.nq; i++) {    
-            visited_gt = 0;    
-            std::priority_queue<std::pair<float, idx_t >> gt(answers[i]);
-            std::unordered_set<idx_t> g;
-
-            while (gt.size()) {
-                g.insert(gt.top().second);
-                gt.pop();
-            }
-            
-            assert (g.size() == opt.k);
-
-            std::cout << "The ground truth: " << std::endl;
-            for (size_t j = 0; j < opt.k; j++){
-                std::cout << groundtruth[i * opt.ngt + j] << " ";
-            }
-            
-
-            index->search(opt.k, massQ.data() + i*opt.d, distances, labels, g, groundtruth.data()+ i * opt.ngt);
-            sum_visited_gt += visited_gt;
-            std::cout << std::endl;
-            for (size_t j = 0; j < opt.k; j++)
-            {
-                if (g.count(labels[j]) != 0) {
-                    correct++;
-                    std::cout << labels[j] << " ";
-                }
-            }
-            std::cout << std::endl;
-            if (i == 10){
-                exit(0);
-            }
-            std::cout << "Now the correct is: " << correct << std::endl;
-            if (i == 10)
-            exit(0);
+        while (gt.size()) {
+            g.insert(gt.top().second);
+            gt.pop();
         }
-        std::cout << "Now correct and visited gt is " << correct << " / " << sum_visited_gt << " / " << opt.nq * opt.k << std::endl;
-        std::cout << "The number of probe and code size is " << opt.nprobe << " " << opt.max_codes << std::endl;
 
-        //===================
-        // Represent results 
-        //===================
-        const float time_us_per_query = stopw.getElapsedTimeMicro() / opt.nq;
-        std::cout << "Recall@" << opt.k << ": " << 1.0f * correct / (opt.nq * opt.k) << std::endl;
-        std::cout << "Time per query: " << time_us_per_query << " us" << std::endl << std::endl;
+        for (size_t j = 0; j < opt.k; j++)
+            if (g.count(labels[j]) != 0) {
+                correct++;
+                break;
+            }
     }
+
+    //===================
+    // Represent results
+    //===================
+    const float time_us_per_query = stopw.getElapsedTimeMicro() / opt.nq;
+    std::cout << "Recall@" << opt.k << ": " << 1.0f * correct / opt.nq << std::endl;
+    std::cout << "Time per query: " << time_us_per_query << " us" << std::endl;
+
     delete index;
     return 0;
 }
