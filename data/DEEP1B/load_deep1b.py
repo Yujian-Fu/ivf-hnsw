@@ -27,7 +27,7 @@ process.stdin.write('e')
 process.wait()
 
 # download base files
-for i in xrange(8, 18):
+for i in xrange(8, 20):
     command = 'curl ' + '"https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=' \
               + yadiskLink + '&path=/base/base_' + str(i).zfill(2) + '"'
     process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
