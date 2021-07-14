@@ -27,7 +27,7 @@ d="128"               # Vector dimension
 # PQ parameters #
 #################
 
-code_size="8"        # Code size per vector in bytes
+code_size="16"        # Code size per vector in bytes
 opq="on"              # Turn on/off opq encoding
 
 #####################
@@ -43,9 +43,9 @@ opq="on"              # Turn on/off opq encoding
 #######################################
 
 k="1"                 # Number of the closest vertices to search
-nprobe="64"           # Number of probes at query time
-max_codes="30000"     # Max number of codes to visit to do a query
-efSearch="100"        # Max number of candidate vertices in priority queue to observe during searching
+nprobe="10"           # Number of probes at query time
+max_codes="200000"     # Max number of codes to visit to do a query
+efSearch="80"        # Max number of candidate vertices in priority queue to observe during searching
 
 #########
 # Paths #
