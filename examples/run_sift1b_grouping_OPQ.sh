@@ -48,7 +48,7 @@ opq="on"              # Turn on/off opq encoding
 
 k="10"                 # Number of the closest vertices to search
 nprobe="80"           # Number of probes at query time
-max_codes="100000"     # Max number of codes to visit to do a query
+max_codes="150000"     # Max number of codes to visit to do a query
 efSearch="80"         # Max number of candidate vertices in priority queue to observe during seaching
 pruning="on"          # Turn on/off pruning
 
